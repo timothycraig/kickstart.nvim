@@ -82,6 +82,14 @@ I hope you enjoy your Neovim journey,
 - TJ
 
 P.S. You can delete this when you're done too. It's your config now! :)
+
+Additional Resources
+
+https://www.youtube.com/@teej_dv/videos
+https://www.youtube.com/@ThePrimeTimeagen/videos
+https://www.youtube.com/@joseanmartinez/videos
+https://www.youtube.com/@devopstoolbox/videos
+https://www.youtube.com/@ElijahManor/videos
 --]]
 
 -- Set <space> as the leader key
@@ -99,7 +107,7 @@ vim.g.maplocalleader = ' '
 vim.opt.number = true
 -- You can also add relative line numbers, for help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -110,7 +118,7 @@ vim.opt.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.opt.clipboard = 'unnamedplus'
+-- vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -148,8 +156,24 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Default tabs to 4 spaces
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.smartindent = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+-- Clipboard control
+vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
+vim.keymap.set('n', '<leader>Y', 'gg"+yG', { desc = 'Copy entire file to system clipboard' })
+vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Delete selection and send to void register' })
+
+-- Move lines up and down
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move current line up' })
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move current line down' })
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
@@ -242,14 +266,76 @@ require('lazy').setup {
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
+      numhl = true,
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
+
+        local function map(mode, l, r, opts)
+          opts = opts or {}
+          opts.buffer = bufnr
+          vim.keymap.set(mode, l, r, opts)
+        end
+
+        -- Navigation
+        map('n', ']c', function()
+          if vim.wo.diff then
+            return ']c'
+          end
+          vim.schedule(function()
+            gs.next_hunk()
+          end)
+          return '<Ignore>'
+        end, { expr = true, desc = 'Gitsigns next_hunk' })
+
+        map('n', '[c', function()
+          if vim.wo.diff then
+            return '[c'
+          end
+          vim.schedule(function()
+            gs.prev_hunk()
+          end)
+          return '<Ignore>'
+        end, { expr = true, desc = 'Gitsigns prev_hunk' })
+
+        -- Actions
+        map('n', '<leader>hp', gs.preview_hunk, { desc = 'Gitsigns preview_hunk' })
+        map('n', '<leader>hs', gs.stage_hunk, { desc = 'Gitsigns stage_hunk' })
+        map('v', '<leader>hs', function()
+          gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        end, { desc = 'Gitsigns stage_hunk' })
+        map('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'Gitsigns undo_stage_hunk' })
+        map('n', '<leader>hr', gs.reset_hunk, { desc = 'Gitsigns reset_hunk' })
+        map('v', '<leader>hr', function()
+          gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
+        end, { desc = 'Gitsigns reset_hunk' })
+        map('n', '<leader>hS', gs.stage_buffer, { desc = 'Gitsigns stage_buffer' })
+        map('n', '<leader>hR', gs.reset_buffer, { desc = 'Gitsigns reset_buffer' })
+        map('n', '<leader>hb', function()
+          gs.blame_line { full = true }
+        end, { desc = 'Gitsigns blame_line' })
+        map('n', '<leader>tb', gs.toggle_current_line_blame, { desc = 'Gitsigns toggle_current_line_blame' })
+        map('n', '<leader>hd', gs.diffthis, { desc = 'Gitsigns diffthis' })
+        map('n', '<leader>hD', function()
+          gs.diffthis '~'
+        end)
+
+        -- Text object
+        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+      end,
     },
+  },
+
+  -- TODO: Add keybinds for neogit and diffview
+  { -- A git interface for Neovim
+    'NeogitOrg/neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
+
+      -- Only one of these is needed, not both.
+      'nvim-telescope/telescope.nvim', -- optional
+    },
+    config = true,
   },
 
   -- NOTE: Plugins can also be configured to run lua code when they are loaded.
@@ -284,6 +370,37 @@ require('lazy').setup {
     end,
   },
 
+  { -- A File Explorer For Neovim Written In Lua
+    'nvim-tree/nvim-tree.lua',
+    version = '*',
+    lazy = false,
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      local nvimtree = require 'nvim-tree'
+
+      -- Disable default file browser
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
+
+      nvimtree.setup {
+        filters = {
+          git_ignored = false,
+          dotfiles = false,
+        },
+        update_focused_file = {
+          enable = true,
+          update_root = true,
+        },
+      }
+
+      vim.keymap.set('n', '<leader>b', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
+      vim.keymap.set('n', '<leader>bc', '<cmd>NvimTreeCollapse<CR>', { desc = '[C]ollapse file explorer' })
+      vim.keymap.set('n', '<leader>br', '<cmd>NvimTreeRefresh<CR>', { desc = '[R]efresh file explorer' })
+    end,
+  },
+
   -- NOTE: Plugins can specify dependencies.
   --
   -- The dependencies are proper plugin specifications as well - anything
@@ -315,7 +432,7 @@ require('lazy').setup {
       -- Useful for getting pretty icons, but requires special font.
       --  If you already have a Nerd Font, or terminal set up with fallback fonts
       --  you can enable this
-      -- { 'nvim-tree/nvim-web-devicons' }
+      { 'nvim-tree/nvim-web-devicons' },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -343,12 +460,17 @@ require('lazy').setup {
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
+        -- TODO:  quickfix list keybinds
         -- defaults = {
         --   mappings = {
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
-        -- pickers = {}
+        pickers = {
+          find_files = {
+            hidden = true,
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -541,7 +663,12 @@ require('lazy').setup {
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
+        cssls = {},
+        eslint_d = {},
+        html = {},
+        tsserver = {},
+        volar = {},
+        -- TODO: add json, emmet, etc
         --
 
         lua_ls = {
@@ -585,6 +712,7 @@ require('lazy').setup {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
+        'prettier',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -605,22 +733,72 @@ require('lazy').setup {
 
   { -- Autoformat
     'stevearc/conform.nvim',
-    opts = {
-      notify_on_error = false,
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
-      },
+    event = { 'BufReadPre', 'BufNewFile' },
+    config = function()
+      local conform = require 'conform'
+
+      conform.setup {
+        notify_on_error = false,
+        format_on_save = {
+          timeout_ms = 500,
+          lsp_fallback = true,
+        },
+        formatters_by_ft = {
+          lua = { 'stylua' },
+          javascript = { 'prettier' },
+          typescript = { 'prettier' },
+          javascriptreact = { 'prettier' },
+          typescriptreact = { 'prettier' },
+          css = { 'prettier' },
+          html = { 'prettier' },
+          json = { 'prettier' },
+          yaml = { 'prettier' },
+          markdown = { 'prettier' },
+          vue = { 'eslint_d' },
+        },
+      }
+
+      vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
+        conform.format {
+          lsp_fallback = true,
+          async = false,
+          timeout_ms = 500,
+        }
+      end, { desc = '[M]ake [P]retty' })
+    end,
+  },
+
+  { -- Lint
+    'mfussenegger/nvim-lint',
+    event = {
+      'BufReadPre',
+      'BufNewFile',
     },
+    config = function()
+      local lint = require 'lint'
+
+      -- Get current file type using :lua print(vim.bo.filetype)
+      lint.linters_by_ft = {
+        javascript = { 'eslint_d' },
+        typescript = { 'eslint_d' },
+        javascriptreact = { 'eslint_d' },
+        typescriptreact = { 'eslint_d' },
+        vue = { 'eslint_d' },
+      }
+
+      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
+
+      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost' }, {
+        group = lint_augroup,
+        callback = function()
+          lint.try_lint()
+        end,
+      })
+
+      vim.keymap.set('n', '<leader>l', function()
+        lint.try_lint()
+      end, { desc = '[L]int current file' })
+    end,
   },
 
   { -- Autocompletion
@@ -652,13 +830,16 @@ require('lazy').setup {
       --    you can use this plugin to help you. It even has snippets
       --    for various frameworks/libraries/etc. but you will have to
       --    set up the ones that are useful for you.
-      -- 'rafamadriz/friendly-snippets',
+      'rafamadriz/friendly-snippets',
     },
     config = function()
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {}
+
+      -- Enable VS Code style snippets
+      require('luasnip.loaders.from_vscode').lazy_load()
 
       cmp.setup {
         snippet = {
@@ -716,25 +897,70 @@ require('lazy').setup {
     end,
   },
 
+  { -- Autopair plugin for Neovim that supports multiple characters
+    'windwp/nvim-autopairs',
+    event = { 'InsertEnter' },
+    dependencies = {
+      'hrsh7th/nvim-cmp',
+    },
+    config = function()
+      -- import nvim-autopairs
+      local autopairs = require 'nvim-autopairs'
+
+      -- configure autopairs
+      autopairs.setup {
+        check_ts = true, -- enable treesitter
+        ts_config = {
+          lua = { 'string' }, -- don't add pairs in lua string treesitter nodes
+          javascript = { 'template_string' }, -- don't add pairs in javscript template_string treesitter nodes
+          java = false, -- don't check treesitter on java
+        },
+      }
+
+      -- import nvim-autopairs completion functionality
+      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+
+      -- import nvim-cmp plugin (completions plugin)
+      local cmp = require 'cmp'
+
+      -- make autopairs and completion work together
+      cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+    end,
+  },
+
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
-    'folke/tokyonight.nvim',
+    'projekt0n/github-nvim-theme',
+    -- These are nice too: 'folke/tokyonight.nvim', 'catppuccin/nvim',
     lazy = false, -- make sure we load this during startup if it is your main colorscheme
     priority = 1000, -- make sure to load this before all the other start plugins
     config = function()
+      require('github-theme').setup {
+        options = {
+          styles = {
+            comments = 'italic',
+            types = 'italic,bold',
+          },
+        },
+      }
+
       -- Load the colorscheme here
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'github_dark_default'
 
       -- You can configure highlights by doing something like
-      vim.cmd.hi 'Comment gui=none'
+      -- vim.cmd.hi 'Comment gui=none'
     end,
   },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+
+  -- Surround.vim is all about "surroundings": parentheses, brackets, quotes, XML tags, and more.
+  -- The plugin provides mappings to easily delete, change and add such surroundings in pairs.
+  { 'tpope/vim-surround' },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -745,14 +971,14 @@ require('lazy').setup {
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [']quote
       --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
+      -- require('mini.ai').setup { n_lines = 500 }
 
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -781,7 +1007,7 @@ require('lazy').setup {
 
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { 'bash', 'c', 'html', 'lua', 'markdown', 'vim', 'vimdoc' },
+        ensure_installed = { 'bash', 'c', 'css', 'html', 'lua', 'markdown', 'scss', 'vim', 'vimdoc', 'vue' },
         -- Autoinstall languages that are not installed
         auto_install = true,
         highlight = { enable = true },
