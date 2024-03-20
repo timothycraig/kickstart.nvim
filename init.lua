@@ -681,7 +681,20 @@ require('lazy').setup({
         cssls = {},
         eslint_d = {},
         html = {},
-        tsserver = {},
+        -- Extra hack for Vue files
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
+        tsserver = {
+          init_options = {
+            plugins = {
+              {
+                name = '@vue/typescript-plugin',
+                location = '/Users/ttcraig/.nvm/versions/node/v20.7.0/lib/node_modules/@vue/typescript-plugin',
+                languages = { 'javascript', 'typescript', 'vue' },
+              },
+            },
+          },
+          filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx', 'vue' },
+        },
         volar = {},
         -- TODO: add json, emmet, etc
         --
@@ -754,7 +767,7 @@ require('lazy').setup({
         end,
         formatters_by_ft = {
           lua = { 'stylua' },
-          javascript = { 'prettier' },
+          javascript = { 'eslint_d' },
           typescript = { 'prettier' },
           javascriptreact = { 'prettier' },
           typescriptreact = { 'prettier' },
@@ -951,19 +964,10 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'projekt0n/github-nvim-theme',
-    priority = 1000, -- make sure to load this before all the other start plugins
+    'catppuccin/nvim',
+    priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
-      require('github-theme').setup {
-        options = {
-          styles = {
-            comments = 'italic',
-            types = 'italic,bold',
-          },
-        },
-      }
-
-      vim.cmd.colorscheme 'github_dark_dimmed'
+      vim.cmd.colorscheme 'catppuccin'
 
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
@@ -1014,6 +1018,7 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
