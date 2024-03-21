@@ -679,7 +679,18 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
         cssls = {},
-        eslint_d = {},
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#eslint
+        eslint = {
+          on_attach = function()
+            -- Fix errors on file save
+            -- vim.api.nvim_create_autocmd('BufWritePre', {
+            --   buffer = bufnr,
+            --   command = 'EslintFixAll',
+            -- })
+
+            vim.keymap.set('n', '<leader>l', '<cmd>EslintFixAll<CR>', { desc = '[L]int current file' })
+          end,
+        },
         html = {},
         -- Extra hack for Vue files
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
@@ -693,9 +704,23 @@ require('lazy').setup({
               },
             },
           },
-          filetypes = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx', 'vue' },
+          filetypes = {
+            'javascript',
+            'typescript',
+            'vue',
+          },
         },
-        volar = {},
+        volar = {
+          init_options = {
+            -- hack for Vue2
+            vue = {
+              hybridMode = false,
+            },
+            -- typescript = {
+            --   tsdk = '/Users/ttcraig/.nvm/versions/node/v20.7.0/lib/node_modules/typescript/lib',
+            -- },
+          },
+        },
         -- TODO: add json, emmet, etc
         --
 
@@ -767,7 +792,7 @@ require('lazy').setup({
         end,
         formatters_by_ft = {
           lua = { 'stylua' },
-          javascript = { 'eslint_d' },
+          javascript = { 'prettier' },
           typescript = { 'prettier' },
           javascriptreact = { 'prettier' },
           typescriptreact = { 'prettier' },
@@ -776,7 +801,7 @@ require('lazy').setup({
           json = { 'prettier' },
           yaml = { 'prettier' },
           markdown = { 'prettier' },
-          vue = { 'eslint_d' },
+          vue = { 'prettier' },
         },
       }
 
@@ -787,39 +812,6 @@ require('lazy').setup({
           timeout_ms = 500,
         }
       end, { desc = '[M]ake [P]retty' })
-    end,
-  },
-
-  { -- Lint
-    'mfussenegger/nvim-lint',
-    event = {
-      'BufReadPre',
-      'BufNewFile',
-    },
-    config = function()
-      local lint = require 'lint'
-
-      -- Get current file type using :lua print(vim.bo.filetype)
-      lint.linters_by_ft = {
-        javascript = { 'eslint_d' },
-        typescript = { 'eslint_d' },
-        javascriptreact = { 'eslint_d' },
-        typescriptreact = { 'eslint_d' },
-        vue = { 'eslint_d' },
-      }
-
-      local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
-
-      vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost' }, {
-        group = lint_augroup,
-        callback = function()
-          lint.try_lint()
-        end,
-      })
-
-      vim.keymap.set('n', '<leader>l', function()
-        lint.try_lint()
-      end, { desc = '[L]int current file' })
     end,
   },
 
@@ -967,7 +959,7 @@ require('lazy').setup({
     'catppuccin/nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
-      vim.cmd.colorscheme 'catppuccin'
+      vim.cmd.colorscheme 'catppuccin-macchiato'
 
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
