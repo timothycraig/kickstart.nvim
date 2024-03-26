@@ -792,16 +792,16 @@ require('lazy').setup({
         end,
         formatters_by_ft = {
           lua = { 'stylua' },
-          javascript = { 'prettier' },
-          typescript = { 'prettier' },
-          javascriptreact = { 'prettier' },
-          typescriptreact = { 'prettier' },
+          -- javascript = { 'prettier' },
+          -- typescript = { 'prettier' },
+          -- javascriptreact = { 'prettier' },
+          -- typescriptreact = { 'prettier' },
           css = { 'prettier' },
           html = { 'prettier' },
           json = { 'prettier' },
           yaml = { 'prettier' },
           markdown = { 'prettier' },
-          vue = { 'prettier' },
+          -- vue = { 'prettier' },
         },
       }
 
@@ -956,10 +956,19 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'catppuccin/nvim',
+    'projekt0n/github-nvim-theme',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
-      vim.cmd.colorscheme 'catppuccin-macchiato'
+      require('github-theme').setup {
+        options = {
+          styles = {
+            comments = 'italic',
+            types = 'italic,bold',
+          },
+        },
+      }
+
+      vim.cmd.colorscheme 'github_dark_dimmed'
 
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
