@@ -658,6 +658,18 @@ require('lazy').setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
+      -- Ensure the servers and tools above are installed
+      --  To check the current status of installed tools and/or manually install
+      --  other tools, you can run
+      --    :Mason
+      --
+      --  You can press `g?` for help in this menu.
+      require('mason').setup()
+
+      -- Needed for Volar (Vue LSP)
+      local mason_registry = require 'mason-registry'
+      local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
+
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -692,35 +704,21 @@ require('lazy').setup({
           end,
         },
         html = {},
-        -- Extra hack for Vue files
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
+        -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
         tsserver = {
           init_options = {
             plugins = {
               {
                 name = '@vue/typescript-plugin',
-                location = '/Users/ttcraig/.nvm/versions/node/v20.7.0/lib/node_modules/@vue/typescript-plugin',
-                languages = { 'javascript', 'typescript', 'vue' },
+                location = vue_language_server_path,
+                languages = { 'vue' },
               },
             },
           },
-          filetypes = {
-            'javascript',
-            'typescript',
-            'vue',
-          },
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
         },
-        volar = {
-          init_options = {
-            -- hack for Vue2
-            vue = {
-              hybridMode = false,
-            },
-            -- typescript = {
-            --   tsdk = '/Users/ttcraig/.nvm/versions/node/v20.7.0/lib/node_modules/typescript/lib',
-            -- },
-          },
-        },
+        volar = {},
         -- TODO: add json, emmet, etc
         --
 
@@ -739,14 +737,6 @@ require('lazy').setup({
           },
         },
       }
-
-      -- Ensure the servers and tools above are installed
-      --  To check the current status of installed tools and/or manually install
-      --  other tools, you can run
-      --    :Mason
-      --
-      --  You can press `g?` for help in this menu.
-      require('mason').setup()
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
@@ -784,7 +774,7 @@ require('lazy').setup({
           -- Disable "format_on_save lsp_fallback" for languages that don't
           -- have a well standardized coding style. You can add additional
           -- languages here or re-enable it for the disabled ones.
-          local disable_filetypes = { c = true, cpp = true }
+          local disable_filetypes = { c = true, cpp = true, vue = true }
           return {
             timeout_ms = 500,
             lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
@@ -1024,7 +1014,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'css', 'html', 'lua', 'markdown', 'scss', 'vim', 'vimdoc', 'vue' },
+      ensure_installed = { 'bash', 'c', 'css', 'html', 'javascript', 'lua', 'markdown', 'scss', 'typescript', 'vim', 'vimdoc', 'vue' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
