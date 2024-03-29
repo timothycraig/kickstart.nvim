@@ -405,7 +405,11 @@ require('lazy').setup({
         },
         update_focused_file = {
           enable = true,
-          update_root = true,
+        },
+        actions = {
+          open_file = {
+            quit_on_open = true,
+          },
         },
       }
 
@@ -658,18 +662,6 @@ require('lazy').setup({
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- Ensure the servers and tools above are installed
-      --  To check the current status of installed tools and/or manually install
-      --  other tools, you can run
-      --    :Mason
-      --
-      --  You can press `g?` for help in this menu.
-      require('mason').setup()
-
-      -- Needed for Volar (Vue LSP)
-      local mason_registry = require 'mason-registry'
-      local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
-
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
       --
@@ -706,19 +698,26 @@ require('lazy').setup({
         html = {},
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
         -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
-        tsserver = {
+        -- tsserver = {
+        --   init_options = {
+        --     plugins = {
+        --       {
+        --         name = '@vue/typescript-plugin',
+        --         location = vue_language_server_path,
+        --         languages = { 'vue' },
+        --       },
+        --     },
+        --   },
+        --   filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+        -- },
+        volar = {
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
           init_options = {
-            plugins = {
-              {
-                name = '@vue/typescript-plugin',
-                location = vue_language_server_path,
-                languages = { 'vue' },
-              },
+            vue = {
+              hybridMode = false,
             },
           },
-          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
         },
-        volar = {},
         -- TODO: add json, emmet, etc
         --
 
@@ -737,6 +736,14 @@ require('lazy').setup({
           },
         },
       }
+
+      -- Ensure the servers and tools above are installed
+      --  To check the current status of installed tools and/or manually install
+      --  other tools, you can run
+      --    :Mason
+      --
+      --  You can press `g?` for help in this menu.
+      require('mason').setup()
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
