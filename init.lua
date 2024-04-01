@@ -771,45 +771,43 @@ require('lazy').setup({
 
   { -- Autoformat
     'stevearc/conform.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    config = function()
-      local conform = require 'conform'
-
-      conform.setup {
-        notify_on_error = false,
-        format_on_save = function(bufnr)
-          -- Disable "format_on_save lsp_fallback" for languages that don't
-          -- have a well standardized coding style. You can add additional
-          -- languages here or re-enable it for the disabled ones.
-          local disable_filetypes = { c = true, cpp = true, vue = true }
-          return {
-            timeout_ms = 500,
-            lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-          }
+    lazy = false,
+    keys = {
+      {
+        '<leader>f',
+        function()
+          require('conform').format { async = true, lsp_fallback = true }
         end,
-        formatters_by_ft = {
-          lua = { 'stylua' },
-          -- javascript = { 'prettier' },
-          -- typescript = { 'prettier' },
-          -- javascriptreact = { 'prettier' },
-          -- typescriptreact = { 'prettier' },
-          css = { 'prettier' },
-          html = { 'prettier' },
-          json = { 'prettier' },
-          yaml = { 'prettier' },
-          markdown = { 'prettier' },
-          -- vue = { 'prettier' },
-        },
-      }
-
-      vim.keymap.set({ 'n', 'v' }, '<leader>mp', function()
-        conform.format {
-          lsp_fallback = true,
-          async = false,
+        mode = '',
+        desc = '[F]ormat buffer',
+      },
+    },
+    opts = {
+      notify_on_error = false,
+      format_on_save = function(bufnr)
+        -- Disable "format_on_save lsp_fallback" for languages that don't
+        -- have a well standardized coding style. You can add additional
+        -- languages here or re-enable it for the disabled ones.
+        local disable_filetypes = { c = true, cpp = true, vue = true }
+        return {
           timeout_ms = 500,
+          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
         }
-      end, { desc = '[M]ake [P]retty' })
-    end,
+      end,
+      formatters_by_ft = {
+        lua = { 'stylua' },
+        -- javascript = { 'prettier' },
+        -- typescript = { 'prettier' },
+        -- javascriptreact = { 'prettier' },
+        -- typescriptreact = { 'prettier' },
+        css = { 'prettier' },
+        html = { 'prettier' },
+        json = { 'prettier' },
+        yaml = { 'prettier' },
+        markdown = { 'prettier' },
+        -- vue = { 'prettier' },
+      },
+    },
   },
 
   { -- Autocompletion
