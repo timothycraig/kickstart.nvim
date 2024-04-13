@@ -305,21 +305,27 @@ require('lazy').setup({
 
         -- Actions
         map('n', '<leader>hp', gs.preview_hunk, { desc = 'Gitsigns preview_hunk' })
+
         map('n', '<leader>hs', gs.stage_hunk, { desc = 'Gitsigns stage_hunk' })
         map('v', '<leader>hs', function()
           gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
         end, { desc = 'Gitsigns stage_hunk' })
+
         map('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'Gitsigns undo_stage_hunk' })
+
         map('n', '<leader>hr', gs.reset_hunk, { desc = 'Gitsigns reset_hunk' })
         map('v', '<leader>hr', function()
           gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
         end, { desc = 'Gitsigns reset_hunk' })
+
         map('n', '<leader>hS', gs.stage_buffer, { desc = 'Gitsigns stage_buffer' })
         map('n', '<leader>hR', gs.reset_buffer, { desc = 'Gitsigns reset_buffer' })
+
         map('n', '<leader>hb', function()
           gs.blame_line { full = true }
         end, { desc = 'Gitsigns blame_line' })
-        map('n', '<leader>tb', gs.toggle_current_line_blame, { desc = 'Gitsigns toggle_current_line_blame' })
+        map('n', '<leader>hB', gs.toggle_current_line_blame, { desc = 'Gitsigns toggle_current_line_blame' })
+
         map('n', '<leader>hd', gs.diffthis, { desc = 'Gitsigns diffthis' })
         map('n', '<leader>hD', function()
           gs.diffthis '~'
@@ -331,25 +337,37 @@ require('lazy').setup({
     },
   },
 
-  -- TODO: Add keybinds for neogit and diffview
   { -- A git interface for Neovim
     'NeogitOrg/neogit',
     dependencies = {
       'nvim-lua/plenary.nvim', -- required
       'nvim-telescope/telescope.nvim', -- optional
     },
-    config = true,
+    config = function()
+      local neogit = require 'neogit'
+      neogit.setup {}
+
+      vim.keymap.set('n', '<leader>gs', neogit.open, { silent = true, noremap = true, desc = 'Neogit status' })
+      vim.keymap.set('n', '<leader>gc', ':Neogit commit<CR>', { silent = true, noremap = true })
+      vim.keymap.set('n', '<leader>gp', ':Neogit pull<CR>', { silent = true, noremap = true })
+      vim.keymap.set('n', '<leader>gP', ':Neogit push<CR>', { silent = true, noremap = true })
+      vim.keymap.set('n', '<leader>gb', ':Telescope git_branches<CR>', { silent = true, noremap = true })
+    end,
   },
 
   { -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
     'sindrets/diffview.nvim',
-    opts = {
-      view = {
-        merge_tool = {
-          layout = 'diff3_mixed',
+    config = function()
+      require('diffview').setup {
+        view = {
+          merge_tool = {
+            layout = 'diff3_mixed',
+          },
         },
-      },
-    },
+      }
+
+      vim.keymap.set('n', '<leader>gd', ':DiffviewOpen<CR>', { silent = true, noremap = true })
+    end,
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -413,9 +431,10 @@ require('lazy').setup({
         },
       }
 
-      vim.keymap.set('n', '<leader>b', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
-      vim.keymap.set('n', '<leader>bc', '<cmd>NvimTreeCollapse<CR>', { desc = '[C]ollapse file explorer' })
-      vim.keymap.set('n', '<leader>br', '<cmd>NvimTreeRefresh<CR>', { desc = '[R]efresh file explorer' })
+      vim.keymap.set('n', '<leader>ee', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file [e]xplorer' })
+      vim.keymap.set('n', '<leader>ef', '<cmd>NvimTreeFindFileToggle<CR>', { desc = 'Toggle file [e]xplorer on current file' })
+      vim.keymap.set('n', '<leader>ec', '<cmd>NvimTreeCollapse<CR>', { desc = 'Collapse file [e]xplorer' })
+      vim.keymap.set('n', '<leader>er', '<cmd>NvimTreeRefresh<CR>', { desc = 'Refresh file [e]xplorer' })
     end,
   },
 
@@ -476,7 +495,6 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- TODO:  quickfix list keybinds
         -- defaults = {
         --   mappings = {
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
@@ -718,7 +736,6 @@ require('lazy').setup({
             },
           },
         },
-        -- TODO: add json, emmet, etc
         --
 
         lua_ls = {
@@ -731,7 +748,7 @@ require('lazy').setup({
                 callSnippet = 'Replace',
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
+              diagnostics = { disable = { 'missing-fields' } },
             },
           },
         },
@@ -1015,6 +1032,18 @@ require('lazy').setup({
     end,
   },
 
+  { -- A snazzy buffer line (with tabpage integration) for Neovim built using lua.
+    'akinsho/bufferline.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    version = '*',
+    opts = {
+      options = {
+        mode = 'tabs',
+        separator_style = 'slant',
+      },
+    },
+  },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -1031,6 +1060,9 @@ require('lazy').setup({
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
@@ -1043,6 +1075,117 @@ require('lazy').setup({
       --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
       --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    end,
+  },
+
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    lazy = true,
+    config = function()
+      require('nvim-treesitter.configs').setup {
+        textobjects = {
+          select = {
+            enable = true,
+
+            -- Automatically jump forward to textobj, similar to targets.vim
+            lookahead = true,
+
+            keymaps = {
+              -- You can use the capture groups defined in textobjects.scm
+              ['a='] = { query = '@assignment.outer', desc = 'Select outer part of an assignment' },
+              ['i='] = { query = '@assignment.inner', desc = 'Select inner part of an assignment' },
+              ['l='] = { query = '@assignment.lhs', desc = 'Select left hand side of an assignment' },
+              ['r='] = { query = '@assignment.rhs', desc = 'Select right hand side of an assignment' },
+
+              -- works for javascript/typescript files (custom capture I created in after/queries/ecma/textobjects.scm)
+              ['a:'] = { query = '@property.outer', desc = 'Select outer part of an object property' },
+              ['i:'] = { query = '@property.inner', desc = 'Select inner part of an object property' },
+              ['l:'] = { query = '@property.lhs', desc = 'Select left part of an object property' },
+              ['r:'] = { query = '@property.rhs', desc = 'Select right part of an object property' },
+
+              ['aa'] = { query = '@parameter.outer', desc = 'Select outer part of a parameter/argument' },
+              ['ia'] = { query = '@parameter.inner', desc = 'Select inner part of a parameter/argument' },
+
+              ['ai'] = { query = '@conditional.outer', desc = 'Select outer part of a conditional' },
+              ['ii'] = { query = '@conditional.inner', desc = 'Select inner part of a conditional' },
+
+              ['al'] = { query = '@loop.outer', desc = 'Select outer part of a loop' },
+              ['il'] = { query = '@loop.inner', desc = 'Select inner part of a loop' },
+
+              ['af'] = { query = '@call.outer', desc = 'Select outer part of a function call' },
+              ['if'] = { query = '@call.inner', desc = 'Select inner part of a function call' },
+
+              ['am'] = { query = '@function.outer', desc = 'Select outer part of a method/function definition' },
+              ['im'] = { query = '@function.inner', desc = 'Select inner part of a method/function definition' },
+
+              ['ac'] = { query = '@class.outer', desc = 'Select outer part of a class' },
+              ['ic'] = { query = '@class.inner', desc = 'Select inner part of a class' },
+            },
+          },
+          swap = {
+            enable = true,
+            swap_next = {
+              ['<leader>na'] = '@parameter.inner', -- swap parameters/argument with next
+              ['<leader>n:'] = '@property.outer', -- swap object property with next
+              ['<leader>nm'] = '@function.outer', -- swap function with next
+            },
+            swap_previous = {
+              ['<leader>pa'] = '@parameter.inner', -- swap parameters/argument with prev
+              ['<leader>p:'] = '@property.outer', -- swap object property with prev
+              ['<leader>pm'] = '@function.outer', -- swap function with previous
+            },
+          },
+          move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = {
+              [']f'] = { query = '@call.outer', desc = 'Next function call start' },
+              [']m'] = { query = '@function.outer', desc = 'Next method/function def start' },
+              [']c'] = { query = '@class.outer', desc = 'Next class start' },
+              [']i'] = { query = '@conditional.outer', desc = 'Next conditional start' },
+              [']l'] = { query = '@loop.outer', desc = 'Next loop start' },
+
+              -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+              -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+              [']s'] = { query = '@scope', query_group = 'locals', desc = 'Next scope' },
+              [']z'] = { query = '@fold', query_group = 'folds', desc = 'Next fold' },
+            },
+            goto_next_end = {
+              [']F'] = { query = '@call.outer', desc = 'Next function call end' },
+              [']M'] = { query = '@function.outer', desc = 'Next method/function def end' },
+              [']C'] = { query = '@class.outer', desc = 'Next class end' },
+              [']I'] = { query = '@conditional.outer', desc = 'Next conditional end' },
+              [']L'] = { query = '@loop.outer', desc = 'Next loop end' },
+            },
+            goto_previous_start = {
+              ['[f'] = { query = '@call.outer', desc = 'Prev function call start' },
+              ['[m'] = { query = '@function.outer', desc = 'Prev method/function def start' },
+              ['[c'] = { query = '@class.outer', desc = 'Prev class start' },
+              ['[i'] = { query = '@conditional.outer', desc = 'Prev conditional start' },
+              ['[l'] = { query = '@loop.outer', desc = 'Prev loop start' },
+            },
+            goto_previous_end = {
+              ['[F'] = { query = '@call.outer', desc = 'Prev function call end' },
+              ['[M'] = { query = '@function.outer', desc = 'Prev method/function def end' },
+              ['[C'] = { query = '@class.outer', desc = 'Prev class end' },
+              ['[I'] = { query = '@conditional.outer', desc = 'Prev conditional end' },
+              ['[L'] = { query = '@loop.outer', desc = 'Prev loop end' },
+            },
+          },
+        },
+      }
+
+      local ts_repeat_move = require 'nvim-treesitter.textobjects.repeatable_move'
+
+      -- vim way: ; goes to the direction you were moving.
+      vim.keymap.set({ 'n', 'x', 'o' }, ';', ts_repeat_move.repeat_last_move)
+      vim.keymap.set({ 'n', 'x', 'o' }, ',', ts_repeat_move.repeat_last_move_opposite)
+
+      -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
+      vim.keymap.set({ 'n', 'x', 'o' }, 'f', ts_repeat_move.builtin_f)
+      vim.keymap.set({ 'n', 'x', 'o' }, 'F', ts_repeat_move.builtin_F)
+      vim.keymap.set({ 'n', 'x', 'o' }, 't', ts_repeat_move.builtin_t)
+      vim.keymap.set({ 'n', 'x', 'o' }, 'T', ts_repeat_move.builtin_T)
     end,
   },
 
