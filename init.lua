@@ -1025,10 +1025,6 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  -- Surround.vim is all about "surroundings": parentheses, brackets, quotes, XML tags, and more.
-  -- The plugin provides mappings to easily delete, change and add such surroundings in pairs.
-  { 'tpope/vim-surround' },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
@@ -1065,18 +1061,6 @@ require('lazy').setup({
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
-  },
-
-  { -- A snazzy buffer line (with tabpage integration) for Neovim built using lua.
-    'akinsho/bufferline.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    version = '*',
-    opts = {
-      options = {
-        mode = 'tabs',
-        separator_style = 'slant',
-      },
-    },
   },
 
   { -- Highlight, edit, and navigate code
@@ -1247,7 +1231,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
