@@ -175,7 +175,9 @@ vim.opt.smartindent = true
 -- Clipboard control
 vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
 vim.keymap.set('n', '<leader>Y', 'gg"+yG', { desc = 'Copy entire file to system clipboard' })
-vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Delete selection and send to void register' })
+vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Paste selection and send to void register' })
+vim.keymap.set('n', '<leader>dd', '"_dd', { desc = 'Delete line and send to void register' })
+vim.keymap.set('v', '<leader>dd', '"_d', { desc = 'Delete selection and send to void register' })
 
 -- Move lines up and down
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move current line up' })
