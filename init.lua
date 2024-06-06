@@ -179,6 +179,33 @@ vim.keymap.set('v', '<leader>p', '"_dP', { desc = 'Paste selection and send to v
 vim.keymap.set('n', '<leader>dd', '"_dd', { desc = 'Delete line and send to void register' })
 vim.keymap.set('v', '<leader>dd', '"_d', { desc = 'Delete selection and send to void register' })
 
+-- Tab management
+vim.keymap.set('n', '<left>', 'gT', { desc = 'Go to next tab' })
+vim.keymap.set('n', '<right>', 'gt', { desc = 'Go to prev tab' })
+vim.keymap.set('n', '<leader>O', '<cmd>%bd|e#|bd#<CR>', { desc = 'Delete all but the current buffer' })
+
+-- These mappings control the size of splits (height/width)
+vim.keymap.set('n', '<M-,>', '<c-w>5<')
+vim.keymap.set('n', '<M-.>', '<c-w>5>')
+vim.keymap.set('n', '<M-t>', '<C-W>+')
+vim.keymap.set('n', '<M-s>', '<C-W>-')
+
+vim.keymap.set('n', '<M-j>', function()
+  if vim.opt.diff:get() then
+    vim.cmd [[normal! ]c]]
+  else
+    vim.cmd [[m .+1<CR>==]]
+  end
+end)
+
+vim.keymap.set('n', '<M-k>', function()
+  if vim.opt.diff:get() then
+    vim.cmd [[normal! [c]]
+  else
+    vim.cmd [[m .-2<CR>==]]
+  end
+end)
+
 -- Move lines up and down
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move current line up' })
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move current line down' })
@@ -339,39 +366,6 @@ require('lazy').setup({
     },
   },
 
-  { -- A git interface for Neovim
-    'NeogitOrg/neogit',
-    dependencies = {
-      'nvim-lua/plenary.nvim', -- required
-      'nvim-telescope/telescope.nvim', -- optional
-    },
-    config = function()
-      local neogit = require 'neogit'
-      neogit.setup {}
-
-      vim.keymap.set('n', '<leader>gs', neogit.open, { silent = true, noremap = true, desc = 'Neogit status' })
-      vim.keymap.set('n', '<leader>gc', ':Neogit commit<CR>', { silent = true, noremap = true })
-      vim.keymap.set('n', '<leader>gp', ':Neogit pull<CR>', { silent = true, noremap = true })
-      vim.keymap.set('n', '<leader>gP', ':Neogit push<CR>', { silent = true, noremap = true })
-      vim.keymap.set('n', '<leader>gb', ':Telescope git_branches<CR>', { silent = true, noremap = true })
-    end,
-  },
-
-  { -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
-    'sindrets/diffview.nvim',
-    config = function()
-      require('diffview').setup {
-        view = {
-          merge_tool = {
-            layout = 'diff3_mixed',
-          },
-        },
-      }
-
-      vim.keymap.set('n', '<leader>gd', ':DiffviewOpen<CR>', { silent = true, noremap = true })
-    end,
-  },
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -407,42 +401,6 @@ require('lazy').setup({
       require('which-key').register({
         ['<leader>h'] = { 'Git [H]unk' },
       }, { mode = 'v' })
-    end,
-  },
-
-  { -- A File Explorer For Neovim Written In Lua
-    'nvim-tree/nvim-tree.lua',
-    version = '*',
-    lazy = false,
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function()
-      local nvimtree = require 'nvim-tree'
-
-      -- Disable default file browser
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-
-      nvimtree.setup {
-        filters = {
-          git_ignored = false,
-          dotfiles = false,
-        },
-        update_focused_file = {
-          enable = true,
-        },
-        actions = {
-          open_file = {
-            quit_on_open = true,
-          },
-        },
-      }
-
-      vim.keymap.set('n', '<leader>ee', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file [e]xplorer' })
-      vim.keymap.set('n', '<leader>ef', '<cmd>NvimTreeFindFileToggle<CR>', { desc = 'Toggle file [e]xplorer on current file' })
-      vim.keymap.set('n', '<leader>ec', '<cmd>NvimTreeCollapse<CR>', { desc = 'Collapse file [e]xplorer' })
-      vim.keymap.set('n', '<leader>er', '<cmd>NvimTreeRefresh<CR>', { desc = 'Refresh file [e]xplorer' })
     end,
   },
 
@@ -967,37 +925,6 @@ require('lazy').setup({
     end,
   },
 
-  { -- Autopair plugin for Neovim that supports multiple characters
-    'windwp/nvim-autopairs',
-    event = { 'InsertEnter' },
-    dependencies = {
-      'hrsh7th/nvim-cmp',
-    },
-    config = function()
-      -- import nvim-autopairs
-      local autopairs = require 'nvim-autopairs'
-
-      -- configure autopairs
-      autopairs.setup {
-        check_ts = true, -- enable treesitter
-        ts_config = {
-          lua = { 'string' }, -- don't add pairs in lua string treesitter nodes
-          javascript = { 'template_string' }, -- don't add pairs in javscript template_string treesitter nodes
-          java = false, -- don't check treesitter on java
-        },
-      }
-
-      -- import nvim-autopairs completion functionality
-      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-
-      -- import nvim-cmp plugin (completions plugin)
-      local cmp = require 'cmp'
-
-      -- make autopairs and completion work together
-      cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-    end,
-  },
-
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -1015,7 +942,7 @@ require('lazy').setup({
         },
       }
 
-      vim.cmd.colorscheme 'github_dark_dimmed'
+      vim.cmd 'colorscheme github_dark_dimmed'
 
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
@@ -1096,117 +1023,6 @@ require('lazy').setup({
       --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
       --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-    end,
-  },
-
-  {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    lazy = true,
-    config = function()
-      require('nvim-treesitter.configs').setup {
-        textobjects = {
-          select = {
-            enable = true,
-
-            -- Automatically jump forward to textobj, similar to targets.vim
-            lookahead = true,
-
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ['a='] = { query = '@assignment.outer', desc = 'Select outer part of an assignment' },
-              ['i='] = { query = '@assignment.inner', desc = 'Select inner part of an assignment' },
-              ['l='] = { query = '@assignment.lhs', desc = 'Select left hand side of an assignment' },
-              ['r='] = { query = '@assignment.rhs', desc = 'Select right hand side of an assignment' },
-
-              -- works for javascript/typescript files (custom capture I created in after/queries/ecma/textobjects.scm)
-              ['a:'] = { query = '@property.outer', desc = 'Select outer part of an object property' },
-              ['i:'] = { query = '@property.inner', desc = 'Select inner part of an object property' },
-              ['l:'] = { query = '@property.lhs', desc = 'Select left part of an object property' },
-              ['r:'] = { query = '@property.rhs', desc = 'Select right part of an object property' },
-
-              ['aa'] = { query = '@parameter.outer', desc = 'Select outer part of a parameter/argument' },
-              ['ia'] = { query = '@parameter.inner', desc = 'Select inner part of a parameter/argument' },
-
-              ['ai'] = { query = '@conditional.outer', desc = 'Select outer part of a conditional' },
-              ['ii'] = { query = '@conditional.inner', desc = 'Select inner part of a conditional' },
-
-              ['al'] = { query = '@loop.outer', desc = 'Select outer part of a loop' },
-              ['il'] = { query = '@loop.inner', desc = 'Select inner part of a loop' },
-
-              ['af'] = { query = '@call.outer', desc = 'Select outer part of a function call' },
-              ['if'] = { query = '@call.inner', desc = 'Select inner part of a function call' },
-
-              ['am'] = { query = '@function.outer', desc = 'Select outer part of a method/function definition' },
-              ['im'] = { query = '@function.inner', desc = 'Select inner part of a method/function definition' },
-
-              ['ac'] = { query = '@class.outer', desc = 'Select outer part of a class' },
-              ['ic'] = { query = '@class.inner', desc = 'Select inner part of a class' },
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ['<leader>na'] = '@parameter.inner', -- swap parameters/argument with next
-              ['<leader>n:'] = '@property.outer', -- swap object property with next
-              ['<leader>nm'] = '@function.outer', -- swap function with next
-            },
-            swap_previous = {
-              ['<leader>pa'] = '@parameter.inner', -- swap parameters/argument with prev
-              ['<leader>p:'] = '@property.outer', -- swap object property with prev
-              ['<leader>pm'] = '@function.outer', -- swap function with previous
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              [']f'] = { query = '@call.outer', desc = 'Next function call start' },
-              [']m'] = { query = '@function.outer', desc = 'Next method/function def start' },
-              [']c'] = { query = '@class.outer', desc = 'Next class start' },
-              [']i'] = { query = '@conditional.outer', desc = 'Next conditional start' },
-              [']l'] = { query = '@loop.outer', desc = 'Next loop start' },
-
-              -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
-              -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
-              [']s'] = { query = '@scope', query_group = 'locals', desc = 'Next scope' },
-              [']z'] = { query = '@fold', query_group = 'folds', desc = 'Next fold' },
-            },
-            goto_next_end = {
-              [']F'] = { query = '@call.outer', desc = 'Next function call end' },
-              [']M'] = { query = '@function.outer', desc = 'Next method/function def end' },
-              [']C'] = { query = '@class.outer', desc = 'Next class end' },
-              [']I'] = { query = '@conditional.outer', desc = 'Next conditional end' },
-              [']L'] = { query = '@loop.outer', desc = 'Next loop end' },
-            },
-            goto_previous_start = {
-              ['[f'] = { query = '@call.outer', desc = 'Prev function call start' },
-              ['[m'] = { query = '@function.outer', desc = 'Prev method/function def start' },
-              ['[c'] = { query = '@class.outer', desc = 'Prev class start' },
-              ['[i'] = { query = '@conditional.outer', desc = 'Prev conditional start' },
-              ['[l'] = { query = '@loop.outer', desc = 'Prev loop start' },
-            },
-            goto_previous_end = {
-              ['[F'] = { query = '@call.outer', desc = 'Prev function call end' },
-              ['[M'] = { query = '@function.outer', desc = 'Prev method/function def end' },
-              ['[C'] = { query = '@class.outer', desc = 'Prev class end' },
-              ['[I'] = { query = '@conditional.outer', desc = 'Prev conditional end' },
-              ['[L'] = { query = '@loop.outer', desc = 'Prev loop end' },
-            },
-          },
-        },
-      }
-
-      local ts_repeat_move = require 'nvim-treesitter.textobjects.repeatable_move'
-
-      -- vim way: ; goes to the direction you were moving.
-      vim.keymap.set({ 'n', 'x', 'o' }, ';', ts_repeat_move.repeat_last_move)
-      vim.keymap.set({ 'n', 'x', 'o' }, ',', ts_repeat_move.repeat_last_move_opposite)
-
-      -- Optionally, make builtin f, F, t, T also repeatable with ; and ,
-      vim.keymap.set({ 'n', 'x', 'o' }, 'f', ts_repeat_move.builtin_f)
-      vim.keymap.set({ 'n', 'x', 'o' }, 'F', ts_repeat_move.builtin_F)
-      vim.keymap.set({ 'n', 'x', 'o' }, 't', ts_repeat_move.builtin_t)
-      vim.keymap.set({ 'n', 'x', 'o' }, 'T', ts_repeat_move.builtin_T)
     end,
   },
 
