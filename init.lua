@@ -940,6 +940,16 @@ require('lazy').setup({
             types = 'italic,bold',
           },
         },
+        groups = {
+          github_dark_dimmed = {
+            ['@tag.attribute.vue'] = { fg = 'palette.magenta.bright' },
+            ['@variable.member.vue'] = { fg = 'palette.magenta.bright' },
+            ['@variable.vue'] = { fg = 'palette.magenta.bright' },
+            ['@operator.typescript'] = { fg = 'palette.red' },
+            ['@variable.member.typescript'] = { fg = 'fg1' },
+            ['@variable.member.javascript'] = { fg = 'fg1' },
+          },
+        },
       }
 
       vim.cmd 'colorscheme github_dark_dimmed'
