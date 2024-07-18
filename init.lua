@@ -941,7 +941,7 @@ require('lazy').setup({
           },
         },
         groups = {
-          github_dark_dimmed = {
+          github_dark = {
             ['@tag.attribute.vue'] = { fg = 'palette.magenta.bright' },
             ['@variable.member.vue'] = { fg = 'palette.magenta.bright' },
             ['@variable.vue'] = { fg = 'palette.magenta.bright' },
@@ -952,7 +952,7 @@ require('lazy').setup({
         },
       }
 
-      vim.cmd 'colorscheme github_dark_dimmed'
+      vim.cmd 'colorscheme github_dark'
 
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
