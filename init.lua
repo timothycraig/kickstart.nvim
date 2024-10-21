@@ -750,8 +750,7 @@ require('lazy').setup({
           end,
         },
         html = {},
-        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#tsserver
-        -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
         -- tsserver = {
         --   init_options = {
         --     plugins = {
@@ -764,6 +763,7 @@ require('lazy').setup({
         --   },
         --   filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
         -- },
+        -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
         volar = {
           filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
           init_options = {
