@@ -751,12 +751,12 @@ require('lazy').setup({
         },
         html = {},
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
-        -- tsserver = {
+        -- ts_ls = {
         --   init_options = {
         --     plugins = {
         --       {
         --         name = '@vue/typescript-plugin',
-        --         location = vue_language_server_path,
+        --         location = '~/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server/',
         --         languages = { 'vue' },
         --       },
         --     },
