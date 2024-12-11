@@ -534,9 +534,7 @@ require('lazy').setup({
       -- end, { desc = '[S]earch [P]ackages' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-      vim.keymap.set('v', '<leader>sw', function()
-        builtin.live_grep { default_text = vim.fn.getreg '0' }
-      end, { desc = '[S]earch current highlighted [W]ord' })
+      vim.keymap.set('v', '<leader>sw', 'y<Esc>:Telescope live_grep default_text=<c-r>0<CR>', { desc = '[S]earch current highlighted [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
