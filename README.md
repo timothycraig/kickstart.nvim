@@ -25,7 +25,7 @@ External Requirements:
 
 - Basic utils: `git`, `make`, `unzip`, C Compiler (`gcc`)
 - [ripgrep](https://github.com/BurntSushi/ripgrep#installation)
-- Clipboard tool (xclip/xsel/win32yank or other depending on platform)
+- Clipboard tool (xclip/xsel/win32yank or other depending on the platform)
 - A [Nerd Font](https://www.nerdfonts.com/): optional, provides various icons
   - if you have it set `vim.g.have_nerd_font` in `init.lua` to true
 - Language Setup:
@@ -56,12 +56,12 @@ so that you have your own copy that you can modify, then install by cloning the
 fork to your machine using one of the commands below, depending on your OS.
 
 > **NOTE**
-> Your fork's url will be something like this:
+> Your fork's URL will be something like this:
 > `https://github.com/<your_github_username>/kickstart.nvim.git`
 
 You likely want to remove `lazy-lock.json` from your fork's `.gitignore` file
 too - it's ignored in the kickstart repo to make maintenance easier, but it's
-[recommmended to track it in version control](https://lazy.folke.io/usage/lockfile).
+[recommended to track it in version control](https://lazy.folke.io/usage/lockfile).
 
 #### Clone kickstart.nvim
 
@@ -105,11 +105,16 @@ nvim
 ```
 
 That's it! Lazy will install all the plugins you have. Use `:Lazy` to view
-current plugin status. Hit `q` to close the window.
+the current plugin status. Hit `q` to close the window.
+
+#### Read The Friendly Documentation
 
 Read through the `init.lua` file in your configuration folder for more
 information about extending and exploring Neovim. That also includes
 examples of adding popularly requested plugins.
+
+> [!NOTE]
+> For more information about a particular plugin check its repository's documentation.
 
 ### Getting Started
 
@@ -117,9 +122,9 @@ examples of adding popularly requested plugins.
 
 ### FAQ
 
-- What should I do if I already have a pre-existing neovim configuration?
+- What should I do if I already have a pre-existing Neovim configuration?
   - You should back it up and then delete all associated files.
-  - This includes your existing init.lua and the neovim files in `~/.local`
+  - This includes your existing init.lua and the Neovim files in `~/.local`
     which can be deleted with `rm -rf ~/.local/share/nvim/`
 - Can I keep my existing configuration in parallel to kickstart?
   - Yes! You can use [NVIM_APPNAME](https://neovim.io/doc/user/starting.html#%24NVIM_APPNAME)`=nvim-NAME`
@@ -179,7 +184,7 @@ the easiest way is to use choco:
 winget install --accept-source-agreements chocolatey.chocolatey
 ```
 
-2. install all requirements using choco, exit previous cmd and
+2. install all requirements using choco, exit the previous cmd and
    open a new one so that choco path is set, and run in cmd as **admin**:
 
 ```
