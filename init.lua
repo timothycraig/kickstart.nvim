@@ -776,26 +776,34 @@ require('lazy').setup({
         },
         html = {},
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
-        -- ts_ls = {
-        --   init_options = {
-        --     plugins = {
-        --       {
-        --         name = '@vue/typescript-plugin',
-        --         location = '~/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server/',
-        --         languages = { 'vue' },
-        --       },
-        --     },
-        --   },
-        --   filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-        -- },
-        -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
-        volar = {
-          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+        ts_ls = {
           init_options = {
-            vue = {
-              hybridMode = false,
+            plugins = {
+              {
+                name = '@vue/typescript-plugin',
+                -- location = '/Users/ttcraig/.nvm/versions/node/v22.12.0/lib/node_modules/@vue/typescript-plugin',
+                location = '/Users/ttcraig/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server',
+                languages = { 'vue' },
+              },
             },
           },
+          filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue' },
+        },
+        -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
+        volar = {
+          -- filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+          -- init_options = {
+          --   vue = {
+          --     hybridMode = false,
+          --   },
+          -- },
+          -- settings = {
+          --   ['vue.languageFeatures'] = {
+          --     format = {
+          --       enable = true,
+          --     },
+          --   },
+          -- },
         },
         lua_ls = {
           -- cmd = { ... },
