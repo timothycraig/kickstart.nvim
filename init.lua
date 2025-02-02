@@ -781,8 +781,7 @@ require('lazy').setup({
             plugins = {
               {
                 name = '@vue/typescript-plugin',
-                -- location = '/Users/ttcraig/.nvm/versions/node/v22.12.0/lib/node_modules/@vue/typescript-plugin',
-                location = '/Users/ttcraig/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server',
+                location = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server',
                 languages = { 'vue' },
               },
             },
