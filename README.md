@@ -76,6 +76,7 @@ git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HO
 brew install neovim ripgrep macos-trash
 brew tap homebrew/cask-fonts
 brew install --cask font-jetbrains-mono-nerd-font
+brew install --cask font-monaspace
 ```
 
 </details>
