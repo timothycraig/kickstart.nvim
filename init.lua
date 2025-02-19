@@ -814,7 +814,15 @@ require('lazy').setup({
             vim.keymap.set('n', '<leader>l', '<cmd>EslintFixAll<CR>', { desc = '[L]int current file' })
           end,
         },
-        html = {},
+        html = {
+          settings = {
+            html = {
+              format = {
+                wrapAttributes = 'force-expand-multiline',
+              },
+            },
+          },
+        },
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#ts_ls
         ts_ls = {
           init_options = {
@@ -830,19 +838,13 @@ require('lazy').setup({
         },
         -- https://github.com/vuejs/language-tools?tab=readme-ov-file#community-integration
         volar = {
-          -- filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-          -- init_options = {
-          --   vue = {
-          --     hybridMode = false,
-          --   },
-          -- },
-          -- settings = {
-          --   ['vue.languageFeatures'] = {
-          --     format = {
-          --       enable = true,
-          --     },
-          --   },
-          -- },
+          settings = {
+            html = {
+              format = {
+                wrapAttributes = 'force-expand-multiline',
+              },
+            },
+          },
         },
         lua_ls = {
           -- cmd = { ... },
@@ -931,14 +933,6 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- javascript = { 'prettier' },
-        -- typescript = { 'prettier' },
-        -- javascriptreact = { 'prettier' },
-        -- typescriptreact = { 'prettier' },
-        css = { 'prettier' },
-        html = { 'prettier' },
-        json = { 'prettier' },
-        yaml = { 'prettier' },
         -- markdown = { 'prettier' },
 
         -- Conform can also run multiple formatters sequentially
