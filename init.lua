@@ -842,6 +842,7 @@ require('lazy').setup({
             html = {
               format = {
                 wrapAttributes = 'force-expand-multiline',
+                wrapLineLength = 0,
               },
             },
           },
