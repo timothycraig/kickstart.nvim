@@ -78,6 +78,7 @@ brew install neovim ripgrep macos-trash
 brew tap homebrew/cask-fonts
 brew install --cask font-jetbrains-mono-nerd-font
 brew install --cask font-monaspace
+brew install --cask font-geist-mono-nerd-font
 ```
 
 </details>
