@@ -942,8 +942,10 @@ require('lazy').setup({
         end
       end,
       formatters_by_ft = {
+        hcl = { 'hcl' },
         lua = { 'stylua' },
-        -- markdown = { 'prettier' },
+        markdown = { 'prettier' },
+        yaml = { 'prettier' },
 
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
