@@ -80,6 +80,9 @@ brew tap homebrew/cask-fonts
 brew install --cask font-jetbrains-mono-nerd-font
 brew install --cask font-monaspace
 brew install --cask font-geist-mono-nerd-font
+
+# Install hclfmt
+go install github.com/hashicorp/hcl/v2/cmd/hclfmt@latest
 ```
 
 </details>
