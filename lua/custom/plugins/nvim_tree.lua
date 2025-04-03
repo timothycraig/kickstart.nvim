@@ -25,6 +25,9 @@ return { -- A File Explorer For Neovim Written In Lua
           quit_on_open = true,
         },
       },
+      renderer = {
+        highlight_git = true,
+      },
     }
 
     vim.keymap.set('n', '<leader>ee', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file [e]xplorer' })
