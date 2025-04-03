@@ -13,20 +13,28 @@ return { -- A File Explorer For Neovim Written In Lua
     vim.g.loaded_netrwPlugin = 1
 
     nvimtree.setup {
-      filters = {
-        git_ignored = false,
-        dotfiles = false,
-      },
-      update_focused_file = {
-        enable = true,
-      },
       actions = {
         open_file = {
           quit_on_open = true,
         },
       },
+      diagnostics = {
+        enable = true,
+      },
+      filters = {
+        git_ignored = false,
+        dotfiles = false,
+      },
       renderer = {
         highlight_git = 'name',
+        highlight_diagnostics = 'name',
+        icons = {
+          git_placement = 'after',
+        },
+        special_files = {},
+      },
+      update_focused_file = {
+        enable = true,
       },
     }
 
