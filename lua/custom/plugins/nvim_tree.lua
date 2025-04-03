@@ -26,7 +26,7 @@ return { -- A File Explorer For Neovim Written In Lua
         },
       },
       renderer = {
-        highlight_git = true,
+        highlight_git = 'name',
       },
     }
 
