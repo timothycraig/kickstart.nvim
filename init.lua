@@ -812,7 +812,9 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
+        bashls = {},
         cssls = {},
+        dockerls = {},
         -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#eslint
         eslint = {
           on_attach = function()
